@@ -1,20 +1,56 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import VirusesView from '../views/VirusesView.vue';
-import BankAccountView from '../views/BankAccountView.vue';
-import ShopLoginView from '../views/ShopLoginView.vue';
+
+import ShopView from "@/views/ShopView.vue";
+import ShopHome from "@/views/ShopHome.vue";
+import ShopLogin from "@/views/ShopLogin.vue";
+import ShopBuy from "@/views/ShopBuy.vue";
+import ShopPay from "@/views/ShopPay.vue";
+import ShopOrders from "@/views/ShopOrders.vue";
 
 Vue.use(VueRouter);
 
 const routes = [
-  { path: '/viruses', name: 'VirusesView', component: VirusesView },
-  { path: '/bank-account', name: 'BankAccountView', component: BankAccountView },
-  { path: '/login', name: 'ShopLoginView', component: ShopLoginView },
+    {
+        path: '/shop',
+        name: 'ShopView',
+        component: ShopView,
+        redirect: '/shop/home', // par défaut vers ShopHome
+        children: [
+            {
+                path: 'home',
+                name: 'ShopHome',
+                components: { shopmain: ShopHome },
+                alias: '/shop', //   /shop/home
+            },
+            {
+                path: 'login',  //   /shop/login
+                name: 'ShopLogin',
+                components: { shopmain: ShopLogin },
+            },
+            {
+                path: 'buy',  //   /shop/buy
+                name: 'ShopBuy',
+                components: { shopmain: ShopBuy },
+            },
+            {
+                path: 'pay/:orderId',  //   /shop/pay/:orderId
+                name: 'ShopPay',
+                components: { shopmain: ShopPay },
+                props: { shopmain: true },
+            },
+            {
+                path: 'orders',  //   /shop/orders
+                name: 'ShopOrders',
+                components: { shopmain: ShopOrders },
+            },
+        ]
+    },
 ];
 
 const router = new VueRouter({
-  mode: 'history',
-  routes,
+    mode: 'history',
+    routes,
 });
 
 export default router;

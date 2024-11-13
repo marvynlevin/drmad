@@ -1,7 +1,12 @@
 <template>
-  <div class="fix">
-    <!-- Boucle pour générer un bouton pour chaque élément dans la prop titles -->
-    <button
+  <div class="fix flex flex-row bg-navbar">
+    <div class="left">
+      <router-link :to="{ name: 'ShopHome' }">
+        <img src="@/assets/logoDrMad.png" alt="Logo">
+      </router-link>
+    </div>
+    <div class="right elt-center">
+      <button
       v-for="(item, index) in titles"
       :key="index"
       :style="{ backgroundColor: item.color }"
@@ -9,6 +14,7 @@
     >
       {{ item.text }}
     </button>
+    </div>
   </div>
 </template>
 
@@ -33,15 +39,36 @@ export default {
 <style scoped>
 .fix {
   position: fixed;
-  top: 4%;
+  top: 0px;
+  left: 0px;
+  padding: 10px;
 }
 
-button {
-  padding: 15px 50px;
-  border: none;
-  color: white;
-  cursor: pointer;
-  font-size: 16px;
+.flex {
+  display: flex;
+}
+.flex-row {
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
 }
 
+.left {
+  margin-left: 35px;
+}
+
+.right {
+  margin-right: 35px;
+}
+
+.bg-navbar {
+  border-bottom: 2px  solid #FF8264;
+  background-color: white;
+}
+
+.elt-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 </style>
