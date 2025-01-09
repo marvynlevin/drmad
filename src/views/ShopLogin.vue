@@ -7,7 +7,7 @@
 
       <span>Password</span><input v-model="password" type="password">
       <!-- Afficher le message d'erreur si la connexion échoue -->
-      <p v-if="errorMessage" style="color: red;">{{ errorMessage }}</p>
+      <p v-if="errorMessage" style="color: #FFAA64; font-weight: bolder; font-style: italic">{{ errorMessage }}</p>
 
       <button @click="handleLogin">Enregistrer</button>
     </div>
@@ -24,10 +24,10 @@ export default {
       login: '',
       password: '',
       errorMessage: ''
-    }; // Ajout message erreur
+    };
   },
   computed: {
-    ...mapState('shop', ['shopUser']) // Ajout namespace 'shop'
+    ...mapState('shop', ['shopUser'])
   },
   methods: {
     ...mapActions('shop', ['shopLogin']),
@@ -37,17 +37,16 @@ export default {
       try {
         const response = await this.shopLogin({ login: this.login, password: this.password });
 
-        console.log("Réponse de la connexion:", response);  // Log de la réponse de Vuex
+        console.log("Réponse de la connexion:", response);
 
         if (response && response.error === 0) {
-          this.errorMessage = '';  // Réinitialiser le message d'erreur
+          this.errorMessage = '';
           this.login = '';
           this.password = '';
 
           // Rediriger vers la page d'achat
           this.$router.push('/shop/buy');
         } else {
-          // Afficher le message d'erreur s'il y en a un
           this.errorMessage = response ? response.data : 'Erreur inattendue lors de la connexion.';
         }
       } catch (error) {
@@ -72,6 +71,10 @@ export default {
 button:disabled {
   background-color: #ffaf9c;
   cursor: not-allowed;
+}
+
+button:hover:enabled {
+  background-color: #ed613f;
 }
 
 button:hover:enabled {

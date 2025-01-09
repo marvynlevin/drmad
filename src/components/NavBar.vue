@@ -4,16 +4,19 @@
       <router-link :to="{ name: 'ShopHome' }">
         <img src="@/assets/logoDrMad.png" alt="Logo">
       </router-link>
+<!--      <router-link  :to="{ name: 'BankHome' }">-->
+<!--        <img  src="@/assets/logoRevolout.png" alt="Logo">-->
+<!--      </router-link>-->
     </div>
     <div class="right elt-center">
-      <button
-      v-for="(item, index) in titles"
-      :key="index"
-      :style="{ backgroundColor: item.color }"
-      @click="handleClick(index)"
-    >
-      {{ item.text }}
-    </button>
+      <button style="margin-left: 5px"
+              v-for="(item, index) in titles"
+              :key="index"
+              :style="{ backgroundColor: item.color }"
+              @click="handleClick(index)"
+      >
+        {{ item.text }}
+      </button>
     </div>
   </div>
 </template>
@@ -47,6 +50,7 @@ export default {
 .flex {
   display: flex;
 }
+
 .flex-row {
   flex-direction: row;
   justify-content: space-between;
@@ -62,7 +66,7 @@ export default {
 }
 
 .bg-navbar {
-  border-bottom: 2px  solid #FF8264;
+  border-bottom: 2px solid #FF8264;
   background-color: white;
 }
 

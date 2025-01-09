@@ -2,7 +2,7 @@ import BankService from "@/services/bankaccount.service";
 
 export default {
     namespaced: true,
-    state : () => ({
+    state: () => ({
         accountAmount: 0,
         accountTransactions: [],
         accountNumberError: 0, // 0: pas d'erreur, 1: valide, -1: erreur
@@ -19,7 +19,7 @@ export default {
         },
     },
     actions: {
-        async getAccountAmount({ commit }, accountNumber) {
+        async getAccountAmount({commit}, accountNumber) {
             try {
                 const response = await BankService.getAccountAmount(accountNumber);
                 if (response.error === 0) {
@@ -34,7 +34,7 @@ export default {
                 commit('updateNumberError', -1);
             }
         },
-        async getAccountTransactions({ commit }, accountNumber) {
+        async getAccountTransactions({commit}, accountNumber) {
             try {
                 const response = await BankService.getAccountTransactions(accountNumber);
                 if (response.error === 0) {
@@ -48,7 +48,7 @@ export default {
                 console.error(("Erreur réseau", error));
             }
         },
-        resetAccountState({ commit }) {
+        resetAccountState({commit}) {
             commit('updateAccountAmount', null);
             commit('updateAccountTransactions', []);
             commit('updateNumberError', 0);

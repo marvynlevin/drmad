@@ -40,6 +40,12 @@ const routes = [
                 props: { shopmain: true },
             },
             {
+                path: 'pay',  //   /shop/pay
+                name: 'ShopPayWithOutId',
+                components: { shopmain: ShopPay },
+                props: { shopmain: true },
+            },
+            {
                 path: 'orders',  //   /shop/orders
                 name: 'ShopOrders',
                 components: { shopmain: ShopOrders },

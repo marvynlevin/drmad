@@ -2,7 +2,9 @@
   <div id="app">
 
     <!-- Instance de NavBar avec écoute de l'événement menu-clicked -->
-    <NavBar style="z-index: 2;" :titles="menuItems" @menu-clicked="navigateToView"/>
+    <NavBar style="z-index: 2;"
+            :titles="dynamicMenuItems"
+            @menu-clicked="navigateToView"/>
 
     <!-- Affiche la vue en fonction de la route actuelle -->
     <router-view></router-view>
@@ -11,7 +13,6 @@
 
 <script>
 import NavBar from './components/NavBar.vue';
-import {mapActions} from 'vuex';
 
 export default {
   name: 'App',
@@ -19,53 +20,88 @@ export default {
     NavBar,
   },
   data() {
-    return {
-      // Définit les boutons du menu avec leur texte et couleur
-      menuItems: [
-        // { text: 'Viruses', color: '#416E3E' },
-        // { text: 'Compte bancaire', color: '#5B3E6E' },
-        {text: 'Login', color: '#FF8264'},
-      ],
-    };
+    return {};
   },
   methods: {
-    ...mapActions(['getAllViruses']),
-
     navigateToView(index) {
       try {
-        switch (index) {
-            // case 0:
-            //   this.$router.push({ name: 'VirusesView' }).catch((error) => {
-            //     if (error.name !== 'NavigationDuplicated') {
-            //       throw error;
-            //     }
-            //   });
-            //   break;
-            // case 1:
-            //   this.$router.push({ name: 'BankAccountView' }).catch((error) => {
-            //     if (error.name !== 'NavigationDuplicated') {
-            //       throw error;
-            //     }
-            //   });
-            //   break;
-          case 0:
-            this.$router.push({name: 'ShopLogin'}).catch((error) => {
-              if (error.name !== 'NavigationDuplicated') {
-                throw error;
-              }
-            });
-            break;
-          default:
-            console.error('Index de menu invalide:', index);
+        if (this.isUserLoggedIn) {
+          // Menu pour les utilisateurs connectés
+          switch (index) {
+            case 0: // Buy
+              this.$router.push({name: 'ShopBuy'}).catch((error) => {
+                if (error.name !== 'NavigationDuplicated') {
+                  throw error;
+                }
+              });
+              break;
+            case 1: // Orders
+              this.$router.push({name: 'ShopOrders'}).catch((error) => {
+                if (error.name !== 'NavigationDuplicated') {
+                  throw error;
+                }
+              });
+              break;
+            case 2: // Pay
+              this.$router.push({name: 'ShopPayWithOutId'}).catch((error) => {
+                if (error.name !== 'NavigationDuplicated') {
+                  throw error;
+                }
+              });
+              break;
+            case 3: // Logout
+              this.logoutUser();
+              break;
+            default:
+              console.error('Index de menu invalide pour un utilisateur connecté:', index);
+          }
+        } else {
+          // Menu pour les utilisateurs non connectés
+          switch (index) {
+            case 0: // Login
+              this.$router.push({name: 'ShopLogin'}).catch((error) => {
+                if (error.name !== 'NavigationDuplicated') {
+                  throw error;
+                }
+              });
+              break;
+            default:
+              console.error('Index de menu invalide pour un utilisateur non connecté:', index);
+          }
         }
       } catch (error) {
         console.error('Erreur de navigation:', error);
       }
     },
+    logoutUser() {
+      // Supprimer l'utilisateur du store et du localStorage
+      this.$store.commit('shop/updateShopUser', null);
+      localStorage.removeItem('shopUser');
+      this.$router.push({name: 'ShopLogin'}); // Rediriger vers la page de connexion
+    },
   },
-  // mounted() {
-  //   this.getAllViruses();
-  // },
+  computed: {
+    isUserLoggedIn() {
+      return this.$store.state.shop.shopUser !== null; // Vérifie si un utilisateur est connecté
+    },
+    dynamicMenuItems() {
+      if (this.isUserLoggedIn) {
+        // Si l'utilisateur est connecté, afficher tous les boutons
+        return [
+          {text: 'Buy', color: '#FF8264'},
+          {text: 'Orders', color: '#FF8264'},
+          {text: 'Pay', color: '#FF8264'},
+          {text: 'Logout', color: '#c14e33'},
+        ];
+      } else {
+        // Si l'utilisateur n'est pas connecté, afficher uniquement le bouton Login
+        return [
+          {text: 'Login', color: '#FF8264'},
+        ];
+      }
+    },
+  },
+
 };
 </script>
 
@@ -75,7 +111,7 @@ body {
   margin-right: 12%;
 }
 
-h1, h2, h3, h4, h5, h6, p, a, li, ul, button, input, span {
+h1, h2, h3, h4, h5, h6, p, a, li, ul, button, input, span, label {
   font-family: "Bahnschrift", Arial, sans-serif;
 }
 
