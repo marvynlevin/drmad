@@ -35,9 +35,9 @@
 
         <!-- Bouton de l'item si itemButton.show est vrai -->
         <button style="margin-right: 0px; margin-left: auto; margin-top:auto; margin-bottom: auto;"
-            v-if="itemButton.show"
-            @click="emitItemButtonClicked(item.realIndex, amountValues[item.realIndex])"
-            :disabled="amountValues[item.realIndex] == 0 || amountValues[item.realIndex] > item.stock"
+                v-if="itemButton.show"
+                @click="emitItemButtonClicked(item.realIndex, amountValues[item.realIndex])"
+                :disabled="amountValues[item.realIndex] == 0 || amountValues[item.realIndex] > item.stock"
         >
           {{ itemButton.text }}
         </button>
@@ -91,8 +91,9 @@ export default {
   data() {
     return {
       // amountValues = { 0: 10, 1: 5, 2: 0, 3: 0 };
+      // item.stock || 0 Si on veut init au stock de base
       amountValues: this.data.reduce((i, item) => {
-        i[item.realIndex] = item.stock || 0;
+        i[item.realIndex] = 0;
         return i;
       }, {}),
     };
@@ -111,9 +112,9 @@ export default {
     // Émet l'événement item-button-clicked avec l'indice du bouton cliqué et la valeur du champ numérique
     emitItemButtonClicked(realIndex, amount) {
       if (amount && realIndex >= 0) {
-        this.$emit('item-button-clicked', { index: realIndex, amount });
+        this.$emit('item-button-clicked', {index: realIndex, amount});
       } else {
-        console.error("Erreur : index ou quantité non valide", { realIndex, amount });
+        console.error("Erreur : index ou quantité non valide", {realIndex, amount});
       }
     },
 
@@ -143,19 +144,20 @@ export default {
       const stock = item.stock || 0;
       const amount = this.amountValues[item.realIndex];
 
-      if (amount < 0) {
+      if (amount <= 0) {
         this.amountValues[item.realIndex] = 0;
-      } else if (amount > stock) {
+      }
+
+      else if (amount > stock) {
         this.amountValues[item.realIndex] = stock;
       }
     },
 
-    // Fonction initStock pour réinitialiser les quantités
     initStock() {
       console.log('Stock mis à jour!');
       this.data.forEach((item) => {
         if (!this.amountValues[item.realIndex]) {
-          this.$set(this.amountValues, item.realIndex, item.stock || 0);
+          this.$set(this.amountValues, item.realIndex, 0);
         }
       });
     },
