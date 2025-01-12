@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import {mapState, mapActions} from "vuex";
+import {mapState, mapActions, mapGetters} from "vuex";
 import CheckedList from "@/components/CheckedList.vue";
 import ShopService from "@/services/shop.service.js";
 
@@ -22,7 +22,9 @@ export default {
     CheckedList,
   },
   computed: {
-    ...mapState("shop", ["basket"]),
+    ...mapState("shop", ["basket", "shopUser"]),
+    ...mapGetters('shop', ['userId']),
+
     basketItems() {
       return this.basket.items.map(({item: itemId, amount}) => {
         const item = this.$store.state.shop.viruses.find(virus => virus._id === itemId);
@@ -66,14 +68,13 @@ export default {
             return null;
           }
         }).filter(item => item !== null), // Filtrer les éléments invalides
-        date: new Date().toISOString(), // Ajouter la date actuelle au format ISO
+        date: new Date().toISOString(),
       };
 
       console.log("Order :", JSON.stringify(order.items, null, 2));
 
       try {
-        // Appel du service pour créer la commande
-        const response = await ShopService.createOrder(this.$store.state.shop.shopUser._id, order);
+        const response = await ShopService.createOrder(this.userId, order);
 
         if (response.error === 0) {
           alert("Commande validée avec succès !");
@@ -97,17 +98,7 @@ export default {
 </script>
 
 <style scoped>
-button:disabled {
-  background-color: #ffaf9c;
-  cursor: not-allowed;
-}
-
 button {
-  background-color: #f88265;
   margin-bottom: 15px;
-}
-
-button:hover:enabled {
-  background-color: #ed613f;
 }
 </style>

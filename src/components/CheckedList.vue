@@ -34,7 +34,7 @@
         />
 
         <!-- Bouton de l'item si itemButton.show est vrai -->
-        <button
+        <button style="margin-right: 0px; margin-left: auto; margin-top:auto; margin-bottom: auto;"
             v-if="itemButton.show"
             @click="emitItemButtonClicked(item.realIndex, amountValues[item.realIndex])"
             :disabled="amountValues[item.realIndex] == 0 || amountValues[item.realIndex] > item.stock"
@@ -170,20 +170,7 @@ ul {
 }
 
 li {
-  margin-bottom: 10px;
-}
-
-button:disabled {
-  background-color: #ffaf9c;
-  cursor: not-allowed;
-}
-
-button {
-  background-color: #f88265;
-}
-
-button:hover:enabled {
-  background-color: #ed613f;
+  margin-bottom: 3px;
 }
 
 .border-top-full {
@@ -196,24 +183,4 @@ input {
   padding: 8px;
 }
 
-p {
-  margin-top: 10px;
-  font-size: 18px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  border: 1px solid black;
-  padding: 8px;
-  text-align: left;
-}
-
-th {
-  background-color: #f2f2f2;
-  font-weight: bold;
-}
 </style>

@@ -1,52 +1,48 @@
 <template>
-  <div class="fix flex flex-row bg-navbar">
-    <div class="left">
-      <router-link :to="{ name: 'ShopHome' }">
-        <img src="@/assets/logoDrMad.png" alt="Logo">
-      </router-link>
-<!--      <router-link  :to="{ name: 'BankHome' }">-->
-<!--        <img  src="@/assets/logoRevolout.png" alt="Logo">-->
-<!--      </router-link>-->
+    <div class="flex flex-row">
+      <div
+          style="display: flex; flex-direction: row; text-align: center; align-items: center; justify-content: center; margin-top: 5px">
+        <button style="margin-bottom: 10px; margin-right: 10px"
+                v-for="(item, index) in links"
+                :key="index"
+                :style="{ backgroundColor: item.color }"
+                @click="goTo(item, index)"
+        >
+          <slot name="nav-button" :label="item.label">{{ item.label }}</slot>
+        </button>
+      </div>
     </div>
-    <div class="right elt-center">
-      <button style="margin-left: 5px"
-              v-for="(item, index) in titles"
-              :key="index"
-              :style="{ backgroundColor: item.color }"
-              @click="handleClick(index)"
-      >
-        {{ item.text }}
-      </button>
-    </div>
-  </div>
 </template>
 
 <script>
 export default {
   name: 'NavBar',
   props: {
-    titles: {
+    links: {
       type: Array,
-      required: true
-    }
+      required: true,
+    },
   },
   methods: {
-    handleClick(index) {
-      // Emet l'événement 'menu-clicked' avec l'index du bouton cliqué
-      this.$emit('menu-clicked', index);
-    }
-  }
+    goTo(item) {
+      // Si l'élément est Logout, émettre un événement vers le parent
+      if (item.label === "Logout") {
+        // Émettre l'événement logout pour gérer la déconnexion
+        this.$emit('logout');
+      } else {
+        // Si c'est un autre bouton, navigation normale
+        this.$router.push(item.to).catch((err) => {
+          if (err.name !== "NavigationDuplicated") {
+            console.error(err);
+          }
+        });
+      }
+    },
+  },
 };
 </script>
 
 <style scoped>
-.fix {
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  padding: 10px;
-}
-
 .flex {
   display: flex;
 }
@@ -57,22 +53,21 @@ export default {
   width: 100%;
 }
 
-.left {
-  margin-left: 35px;
-}
-
-.right {
-  margin-right: 35px;
-}
-
 .bg-navbar {
   border-bottom: 2px solid #FF8264;
   background-color: white;
 }
 
-.elt-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+button:disabled {
+  background-color: #ffaf9c;
+  cursor: not-allowed;
+}
+
+button {
+  background-color: #f88265;
+}
+
+button:hover:enabled {
+  background-color: #ed613f;
 }
 </style>

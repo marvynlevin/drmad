@@ -18,13 +18,25 @@
 <script>
 import ItemsList from '@/components/ItemList.vue';
 import BasketList from '@/components/BasketList.vue';
+import {mapGetters} from "vuex";
 
 export default {
   name: 'ShopBuy',
   components: {
     ItemsList,
     BasketList
-  }
+  },
+
+  computed: {
+    ...mapGetters("shop", ['isUserLoggedIn']),
+  },
+
+  // Si on est plus connecté alors, on retourne à la page de login (idem pour toutes les autres pages)
+  mounted() {
+    if (!this.isUserLoggedIn) {
+      this.$router.push('/shop/login');
+    }
+  },
 }
 </script>
 

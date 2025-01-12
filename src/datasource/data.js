@@ -128,7 +128,7 @@ let shopusers = [
             }],
             "date": {"$date": "2024-09-02T09:10:58.884Z"},
             "total": 10500,
-            "status": "waiting_payment",
+            "status": "finalized",
             "uuid": "01010101-0000-0000-0000-010101010101",
             "_id": "66d58122c08b4d64db14cd05"
         }]

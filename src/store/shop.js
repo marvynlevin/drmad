@@ -8,48 +8,55 @@ export default {
         basket: {items: []},
         orders: [],
     }),
+
     mutations: {
         updateViruses(state, viruses) {
             state.viruses = viruses;
         },
+
         updateShopUser(state, shopUser) {
             state.shopUser = shopUser;
         },
+
         setBasket(state, basket) {
             state.basket = basket;
         },
+
         addItemToBasket(state, {item, amount}) {
             const existingItem = state.basket.items.find(basketItem => basketItem.item === item._id);
-            console.log(existingItem);
             if (existingItem) {
-                existingItem.amount += amount; // Augmenter la quantité
-                console.log("existe avec quantité : " + existingItem.amount);
+                existingItem.amount += amount; // Augmenter quantité
             } else {
-                state.basket.items.push({item: item._id, amount}); // Ajouter un nouvel item
-                console.log("existait pas encore !");
+                state.basket.items.push({item: item._id, amount}); // Ajouter nouvel item
             }
         },
+
         removeItemFromBasket(state, itemId) {
             state.basket.items = state.basket.items.filter(basketItem => basketItem.item !== itemId);
         },
+
         clearBasket(state) {
             state.basket.items = [];
         },
+
         setOrders(state, orders) {
             state.orders = orders;
         },
+
         updateOrders(state, {orderId, status}) {
             const order = state.orders.find(o => o.uuid === orderId);
             if (order) {
                 order.status = status;
             }
         },
+
         logout(state) {
             state.shopUser = null;
             state.basket = {items: []};
             state.orders = [];
         },
     },
+
     actions: {
         async getAllViruses({commit}) {
             try {
@@ -63,7 +70,7 @@ export default {
                 console.error("Erreur réseau;", err);
             }
         },
-        // Connexion de l'utilisateur
+
         async shopLogin({commit, dispatch}, credentials) {
             try {
                 const response = await ShopService.shopLogin(credentials);
@@ -84,7 +91,7 @@ export default {
                 return {error: 1, data: 'Erreur réseau lors de la connexion.'};
             }
         },
-        // Récupérer le panier de l'utilisateur
+
         async fetchBasket({state, commit}) {
             if (!state.shopUser) {
                 console.error('Utilisateur non connecté.');
@@ -101,7 +108,7 @@ export default {
                 console.error("Erreur réseau:", err);
             }
         },
-        // Ajouter un article au panier
+
         async addItemToBasket({state, commit}, {item, amount}) {
             if (!state.shopUser) {
                 console.error('Utilisateur non connecté.');
@@ -109,18 +116,16 @@ export default {
             }
             commit('addItemToBasket', {item, amount});
             try {
-                console.log("1");
                 const response = await ShopService.updateBasket(state.shopUser._id, state.basket);
                 if (response.error !== 0) {
                     console.error("Erreur lors de la mise à jour du panier:", response.data);
                 }
-                console.log("2");
 
             } catch (err) {
                 console.error("Erreur réseau:", err);
             }
         },
-        // Retirer un article du panier
+
         async removeItemFromBasket({state, commit}, itemId) {
             if (!state.shopUser) {
                 console.error('Utilisateur non connecté.');
@@ -136,7 +141,7 @@ export default {
                 console.error("Erreur réseau:", err);
             }
         },
-        // Vider le panier
+
         async clearBasket({state, commit}) {
             if (!state.shopUser) {
                 console.error('Utilisateur non connecté.');
@@ -152,7 +157,7 @@ export default {
                 console.error("Erreur réseau:", err);
             }
         },
-        // Récupérer les commandes de l'utilisateur
+
         async fetchOrders({state, commit}) {
             if (!state.shopUser) {
                 console.error('Utilisateur non connecté.');
@@ -169,14 +174,14 @@ export default {
                 console.error("Erreur réseau:", err);
             }
         },
-        // Annuler une commande
+
         async cancelOrder({commit, state}, {orderId}) {
             if (!state.shopUser) {
                 console.error('Utilisateur non connecté.');
                 return;
             }
             try {
-                const response = await ShopService.updateOrderStatus(state.shopUser._id, orderId, 'cancelled');  // Mettez à jour cette ligne en fonction de votre service
+                const response = await ShopService.updateOrderStatus(state.shopUser._id, orderId, 'cancelled');
                 if (response.error === 0) {
                     commit('updateOrders', {orderId, status: 'cancelled'});
                     return {error: 0, data: 'Commande annulée avec succès'};
@@ -189,18 +194,13 @@ export default {
             }
         },
     },
+
     getters: {
-        getViruses(state) {
-            return state.viruses;
+        userId: state => {
+            return state.shopUser ? state.shopUser._id : null;
         },
-        getShopUser(state) {
-            return state.shopUser;
-        },
-        getBasket(state) {
-            return state.basket;
-        },
-        getOrders(state) {
-            return state.orders;
+        isUserLoggedIn: state => {
+            return state.shopUser !== null;
         },
     },
 };

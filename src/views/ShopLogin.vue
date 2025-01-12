@@ -1,16 +1,40 @@
 <template>
   <div>
-    <h2>Shop Login</h2>
+    <h2>Page de connexion</h2>
 
-    <div class="flex flex-col">
-      <span>Login</span><input v-model="login">
+    <!--Formulaire réactif-->
+    <form @submit.prevent="handleLogin" class="flex flex-col">
+      <label for="login">Login</label>
+      <input
+        id="login"
+        v-model="login"
+        type="text"
+        placeholder="Entrez votre login"
+        required
+        ref="login"
+        @keydown.enter="focusNextField('password')"
+      />
 
-      <span>Password</span><input v-model="password" type="password">
-      <!-- Afficher le message d'erreur si la connexion échoue -->
-      <p v-if="errorMessage" style="color: #FFAA64; font-weight: bolder; font-style: italic">{{ errorMessage }}</p>
-
-      <button @click="handleLogin">Enregistrer</button>
-    </div>
+      <label for="password">Password</label>
+      <input
+        id="password"
+        v-model="password"
+        type="password"
+        placeholder="Entrez votre mot de passe"
+        required
+        ref="password"
+        @keydown.enter="focusNextField('submit')"
+      />
+      <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+      <p v-if="successMessage" class="success">{{ successMessage }}</p>
+      <button
+        id="submit"
+        type="submit"
+        ref="submitButton"
+      >
+        Se connecter
+      </button>
+    </form>
   </div>
 </template>
 
@@ -23,7 +47,8 @@ export default {
     return {
       login: '',
       password: '',
-      errorMessage: ''
+      errorMessage: '',
+      successMessage: "",
     };
   },
   computed: {
@@ -35,23 +60,38 @@ export default {
       console.log("Login demandé avec:", {login: this.login, password: this.password});
 
       try {
-        const response = await this.shopLogin({ login: this.login, password: this.password });
+        const response = await this.shopLogin({login: this.login, password: this.password});
 
         console.log("Réponse de la connexion:", response);
 
         if (response && response.error === 0) {
+          // Connexion établie
+          this.successMessage = "Compte valide ! Redirection ...";
           this.errorMessage = '';
           this.login = '';
           this.password = '';
 
           // Rediriger vers la page d'achat
-          this.$router.push('/shop/buy');
+          setTimeout(() => {
+            this.$router.push("/shop/buy");
+          }, 300);
         } else {
+
+          // Connexion refusée
           this.errorMessage = response ? response.data : 'Erreur inattendue lors de la connexion.';
+          this.successMessage = '';
         }
       } catch (error) {
         this.errorMessage = 'Erreur inattendue lors de la connexion.';
-        console.error("Erreur catchée:", error);
+        this.successMessage = '';
+        console.error("Erreur :", error);
+      }
+    },
+    focusNextField(nextField) {
+      if (nextField === 'password') {
+        this.$refs.password.focus();
+      } else if (nextField === 'submit') {
+        this.$refs.submitButton.click();
       }
     }
   }
@@ -60,45 +100,10 @@ export default {
 
 
 <style scoped>
-.flex {
-  display: flex;
-}
-
-.flex-col {
-  flex-direction: column;
-}
-
-button:disabled {
-  background-color: #ffaf9c;
-  cursor: not-allowed;
-}
-
-button:hover:enabled {
-  background-color: #ed613f;
-}
-
-button:hover:enabled {
-  background-color: #FF8264;
-}
-
 p {
   margin-top: 10px;
   font-size: 18px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  border: 1px solid black;
-  padding: 8px;
-  text-align: left;
-}
-
-th {
-  background-color: #f2f2f2;
-  font-weight: bold;
+  font-weight: bolder;
+  font-style: italic;
 }
 </style>

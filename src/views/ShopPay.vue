@@ -1,46 +1,73 @@
 <template>
   <div>
     <h2>Page de paiement</h2>
-    <p>Commande ID: {{ orderId }}</p>
 
-    <!-- Champ de saisie pour l'ID de commande -->
-    <input
-        type="text"
-        placeholder="Entrez l'ID de la commande"
-        v-model="orderInput"
-    />
+    <div class="flex flex-row">
+      <span>Commande UUID: {{ orderId }}</span>
 
+      <!-- Champ de saisie pour l'UUID de commande -->
+      <input
+          type="text"
+          placeholder="Entrez l'UUID de la commande"
+          v-model="orderInput"
+      />
+
+      <span>Transaction UUID: {{ transactionId }}</span>
+
+      <!-- Champ de saisie pour l'UUID de transaction bancaire -->
+      <input
+          type="text"
+          placeholder="Entrez l'UUID de transaction bancaire"
+          v-model="transactionId"
+      />
+    </div>
     <!-- Bouton de paiement -->
     <button @click="payOrder">Payer</button>
   </div>
 </template>
 
 <script>
-import shopService from '../services/shop.service';
+import shopService from '@/services/shop.service';
+import {mapActions, mapGetters, mapState} from "vuex";
 
 export default {
   name: 'ShopPay',
-  // La props orderId est passée par le parent
   props: ['orderId'],
   data() {
     return {
-      // Initialisation du champ de saisie avec la props ou une valeur vide
       orderInput: this.orderId || '',
+      transactionId: '',
     };
   },
+
+  computed: {
+    ...mapGetters("bank", ["getTransactions"]),
+    ...mapGetters("shop", ["userId", "isUserLoggedIn"]),
+  },
+
   methods: {
+    ...mapState("shop", ["orders"]),
+    ...mapActions("shop", ["fetchOrders"]),
+
     async payOrder() {
-      // Utiliser l'ID saisi dans le champ ou la prop
+
+      console.log("Orders: ", this.fetchOrders);
+      console.log("Transact: ", this.getTransactions);
+
+      console.log("Order UUID:", this.orderInput);
+
       const orderId = this.orderInput;
+      const transactionId = this.transactionId;
+      const userId = this.userId;
 
       // Vérifier que l'ID de commande est valide
-      if (!orderId) {
-        alert("Veuillez entrer un ID de commande.");
+      if (!orderId || !transactionId) {
+        alert("Veuillez entrer un UUID de commande et un UUID de transaction.");
         return;
       }
 
       // Appeler la méthode de paiement du service
-      const result = await shopService.payOrder(orderId, this.$store.state.shop.shopUser._id);
+      const result = await shopService.payOrder(userId, orderId, transactionId);
 
       if (result.error) {
         // Afficher l'erreur si la commande n'a pas été trouvée
@@ -52,22 +79,11 @@ export default {
         this.$router.push(`/shop/orders`);
       }
     }
-  }
+  },
+  mounted() {
+    if (!this.isUserLoggedIn) {
+      this.$router.push('/shop/login');
+    }
+  },
 };
 </script>
-
-<style scoped>
-button:disabled {
-  background-color: #ffaf9c;
-  cursor: not-allowed;
-}
-
-button {
-  background-color: #f88265;
-  margin-bottom: 15px;
-}
-
-button:hover:enabled {
-  background-color: #ed613f;
-}
-</style>

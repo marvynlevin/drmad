@@ -2,7 +2,6 @@
   <div>
     <h2>Gestion des Items</h2>
 
-    <!-- Filtres -->
     <div>
       <!-- Filtre de prix -->
       <div>
@@ -32,7 +31,7 @@
 
     <div class="border-top-full"></div>
 
-    <!-- Affichage des items avec le composant CheckedList -->
+    <!-- Affichage des items avec CheckedList -->
     <CheckedList
         :data="filteredItems"
         :fields="['name', 'price']"
@@ -50,10 +49,11 @@
     <div class="border-top-full"></div>
 
     <div>
-      <!-- Parcourir les données pour chaque virus -->
+
+      <!-- Parcourir data pour chaque virus -->
       <div v-for="(item, index) in viruses" :key="index">
 
-        <!-- Affichage des promotions uniquement si elles existent -->
+        <!-- Affichage promotions uniquement si elles existent -->
         <div v-if="item.promotion && item.promotion.length > 0">
           <h3>{{ item.name }}</h3>
           <p>{{ item.description }}</p>
@@ -88,32 +88,32 @@ export default {
   computed: {
     ...mapState("shop", ['viruses', 'shopUser']),
 
-    // Applique les filtres pour obtenir les items filtrés
     filteredItems() {
       let items = this.viruses;
 
-
-      // Filtrer par prix
+      // prix
       if (this.enablePriceFilter && this.priceFilter !== '') {
         const priceLimit = Number(this.priceFilter);
         items = items.filter(item => item.price < priceLimit);
       }
 
-      // Filtrer par nom
+      // nom
       if (this.enableNameFilter && this.nameFilter) {
         const searchTerm = this.nameFilter.toLowerCase();
         items = items.filter(item => item.name.toLowerCase().includes(searchTerm));
       }
 
-      // Filtrer par stock
+      // stock
       if (this.enableStockFilter) {
         items = items.filter(item => item.stock > 0);
       }
 
-      // Ajout d'une propriété `realIndex` pour conserver l'index d'origine
+      // Ajout propriété realIndex pour conserver l'index d'origine après filtrage
       return items.map(item => ({
+        // pour chaque item
         ...item,
-        realIndex: this.viruses.findIndex(virus => virus === item), // Trouver l'index réel
+        // trouver index réel
+        realIndex: this.viruses.findIndex(virus => virus === item),
       }));
     }
   },
@@ -125,7 +125,6 @@ export default {
     enableStockFilter: "resetChecked",
 
     viruses(newViruses) {
-      // Initialise les cases à cocher en fonction des données
       if (Array.isArray(newViruses)) {
         this.checked = newViruses.map(() => false);
       } else {
@@ -134,14 +133,12 @@ export default {
     }
   },
   mounted() {
-    // Initialise les cases à cocher lors du montage
     this.getAllViruses();
     this.checked = this.viruses.map(() => false);
   },
   methods: {
     ...mapActions("shop", ["getAllViruses", "addItemToBasket"]),
 
-    // Valide la valeur du filtre de prix
     validatePriceFilter() {
       const priceValue = Number(this.priceFilter);
       if (isNaN(priceValue)) {
@@ -149,21 +146,18 @@ export default {
       }
     },
 
-    // Gère l'ajout individuel au panier
     addItemToCart({index, amount}) {
       const virus = this.viruses[index];
       console.log("Virus à ajouter :", virus, "Quantité :", amount);
 
       // Vérifie que le virus existe avant de l'ajouter
       if (amount > 0 && virus) {
-        // Appel de l'action Vuex pour ajouter l'item au panier
         this.addItemToBasket({item: virus, amount});
       } else {
         console.error("Virus ou quantité non valide.", {item: virus, amount});
       }
     },
 
-    // Gère l'ajout des éléments sélectionnés au panier
     addSelectedItemsToCart(selectedItems) {
       selectedItems.forEach(({index, amount}) => {
         const virus = this.viruses[index];
@@ -174,12 +168,10 @@ export default {
       });
     },
 
-    // Met à jour la liste des cases cochées
     updateChecked(newChecked) {
       this.checked[newChecked] = true;
     },
 
-    // Réinitialiser à false les cases à cocher
     resetChecked() {
       this.checked = [];
     },

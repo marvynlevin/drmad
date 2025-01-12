@@ -1,117 +1,69 @@
 <template>
   <div id="app">
+      <NavBar
+          :links="dynamicLinks"
+      >
+        <template #nav-button="{ label }">
 
-    <!-- Instance de NavBar avec écoute de l'événement menu-clicked -->
-    <NavBar style="z-index: 2;"
-            :titles="dynamicMenuItems"
-            @menu-clicked="navigateToView"/>
+          <!-- Affichage de l'image pour 'boutique' -->
+          <img v-if="label === 'boutique'" src="@/assets/logoDrMad.svg" alt="Shop Icon"
+               @click="handleLogoClick('shop')"/>
 
-    <!-- Affiche la vue en fonction de la route actuelle -->
+          <!-- Affichage de l'image pour 'banque' -->
+          <img v-else-if="label === 'banque'" src="@/assets/logoRevolout.svg" alt="Bank Icon"
+               @click="handleLogoClick('bank')"/>
+        </template>
+      </NavBar>
+    <!-- Vue affichée en fonction de la route -->
     <router-view></router-view>
   </div>
 </template>
 
 <script>
-import NavBar from './components/NavBar.vue';
+import NavBar from "@/components/NavBar.vue";
+import {mapMutations} from "vuex";
 
 export default {
   name: 'App',
-  components: {
-    NavBar,
-  },
+  components: {NavBar},
   data() {
-    return {};
+    return {
+      dynamicLinks: [
+        {label: "boutique", to: "/shop", color: "#FF8264"},
+        {label: "banque", to: "/bank", color: "#FF8264"},
+      ],
+    };
   },
   methods: {
-    navigateToView(index) {
-      try {
-        if (this.isUserLoggedIn) {
-          // Menu pour les utilisateurs connectés
-          switch (index) {
-            case 0: // Buy
-              this.$router.push({name: 'ShopBuy'}).catch((error) => {
-                if (error.name !== 'NavigationDuplicated') {
-                  throw error;
-                }
-              });
-              break;
-            case 1: // Orders
-              this.$router.push({name: 'ShopOrders'}).catch((error) => {
-                if (error.name !== 'NavigationDuplicated') {
-                  throw error;
-                }
-              });
-              break;
-            case 2: // Pay
-              this.$router.push({name: 'ShopPayWithOutId'}).catch((error) => {
-                if (error.name !== 'NavigationDuplicated') {
-                  throw error;
-                }
-              });
-              break;
-            case 3: // Logout
-              this.logoutUser();
-              break;
-            default:
-              console.error('Index de menu invalide pour un utilisateur connecté:', index);
-          }
-        } else {
-          // Menu pour les utilisateurs non connectés
-          switch (index) {
-            case 0: // Login
-              this.$router.push({name: 'ShopLogin'}).catch((error) => {
-                if (error.name !== 'NavigationDuplicated') {
-                  throw error;
-                }
-              });
-              break;
-            default:
-              console.error('Index de menu invalide pour un utilisateur non connecté:', index);
-          }
-        }
-      } catch (error) {
-        console.error('Erreur de navigation:', error);
-      }
-    },
-    logoutUser() {
-      // Supprimer l'utilisateur du store et du localStorage
-      this.$store.commit('shop/updateShopUser', null);
-      localStorage.removeItem('shopUser');
-      this.$router.push({name: 'ShopLogin'}); // Rediriger vers la page de connexion
-    },
-  },
-  computed: {
-    isUserLoggedIn() {
-      return this.$store.state.shop.shopUser !== null; // Vérifie si un utilisateur est connecté
-    },
-    dynamicMenuItems() {
-      if (this.isUserLoggedIn) {
-        // Si l'utilisateur est connecté, afficher tous les boutons
-        return [
-          {text: 'Buy', color: '#FF8264'},
-          {text: 'Orders', color: '#FF8264'},
-          {text: 'Pay', color: '#FF8264'},
-          {text: 'Logout', color: '#c14e33'},
-        ];
-      } else {
-        // Si l'utilisateur n'est pas connecté, afficher uniquement le bouton Login
-        return [
-          {text: 'Login', color: '#FF8264'},
-        ];
-      }
-    },
-  },
+    ...mapMutations("shop", ["updateShopUser"]),
 
+    // logoutUser() {
+    //   this.updateShopUser(null);  // Mise à jour du store pour déconnecter l'utilisateur
+    //   localStorage.removeItem("shopUser");  // Nettoyage du localStorage
+    //   this.$router.push({name: "ShopLogin"});  // Redirection vers la page de login
+    // },
+
+    handleLogoClick(target) {
+
+      // Effectuer la déconnexion
+      // this.logoutUser();
+
+      // Vérifier si la route actuelle est déjà la page de login
+      if (this.$route.name !== 'ShopLogin') {
+        // Si ce n'est pas la page de login, alors on redirige
+        if (target === 'shop') {
+          this.$router.push({name: 'ShopLogin'});
+        } else if (target === 'bank') {
+          this.$router.push({name: 'BankLogin'});
+        }
+      }
+    }
+  },
 };
 </script>
 
 <style>
-body {
-  margin-left: 12%;
-  margin-right: 12%;
-}
-
-h1, h2, h3, h4, h5, h6, p, a, li, ul, button, input, span, label {
+h1, h2, h3, h4, h5, h6, p, a, li, ul, u, button, input, span, label, th, td {
   font-family: "Bahnschrift", Arial, sans-serif;
 }
 
@@ -126,6 +78,12 @@ h2 {
   color: #FFAA64;
 }
 
+u {
+  font-size: 20px;
+  text-decoration-color: #FF8264;
+  text-decoration-style: solid;
+}
+
 button {
   padding: 15px 50px;
   margin-left: auto;
@@ -138,8 +96,60 @@ button {
   border-radius: 10px;
 }
 
+button:disabled {
+  background-color: #ffaf9c;
+  cursor: not-allowed;
+}
+
+button {
+  background-color: #f88265;
+  margin-bottom: 15px;
+}
+
+button:hover:enabled {
+  background-color: #ed613f;
+}
+
 input {
   margin: 10px;
   padding: 10px 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+
+th, td {
+  border: 2px solid #FFAA64;
+  padding: 8px;
+  text-align: center;
+}
+
+th {
+  background-color: #FFAA64;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.flex-row {
+  flex-direction: column;
+}
+
+.error {
+  margin-top: 10px;
+  color: red;
+}
+
+.success {
+  margin-top: 10px;
+  color: green;
 }
 </style>

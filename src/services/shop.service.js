@@ -64,25 +64,16 @@ async function getBasket(userId) {
 
 async function createOrder(userId, order) {
     try {
-        const response = await LocalSource.createOrder(userId, order);
-        return response;
+        return await LocalSource.createOrder(userId, order);
     } catch (error) {
         console.error("Erreur lors de la création de la commande :", error);
         return {error: 1, status: 500, data: "Erreur interne du serveur."};
     }
 }
 
-async function payOrder(orderId) {
-    // Récupérer l'utilisateur connecté depuis localStorage
-    const userJson = localStorage.getItem('shopUser');
-    if (!userJson) {
-        return {error: 1, data: 'Utilisateur non connecté.'};
-    }
-    const userId = JSON.parse(userJson)._id;
-
+async function payOrder(userId, orderId, transactionId) {
     try {
-        const response = await LocalSource.payOrder(userId, orderId);
-        return response;
+        return await LocalSource.payOrder(userId, orderId, transactionId);
     } catch (error) {
         console.error('Erreur lors du paiement de la commande :', error);
         return {error: 1, status: 500, data: 'Erreur interne du serveur.'};
